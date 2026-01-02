@@ -12,7 +12,11 @@ router.get('/', async (req, res) => {
     const page = parseInt(pageNo as string) || 1
 
     const authors = await authorService.getAllAuthors(size, page)
-    res.setHeader('x-total-count', authors.count)
+    if (authors.authors.length === 0) {
+      res.status(404).json({ error: 'ไม่พบผู้แต่ง' })
+      return
+    }
+    res.setHeader('x-total-count', authors.count.toString())
     res.json(authors.authors)
   } catch (error) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลผู้แต่ง' })

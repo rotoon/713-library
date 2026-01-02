@@ -12,6 +12,10 @@ router.get('/', async (req, res) => {
     const page = parseInt(pageNo as string) || 1
 
     const result = await borrowService.getAllBorrowRecords(size, page)
+    if (result.borrowItems.length === 0) {
+      res.status(404).json({ error: 'ไม่พบประวัติการยืม' })
+      return
+    }
     res.setHeader('x-total-count', result.count.toString())
     res.json(result.borrowItems)
   } catch (error) {
@@ -32,6 +36,10 @@ router.get('/due', async (req, res) => {
       size,
       page
     )
+    if (borrowItems.borrowItems.length === 0) {
+      res.status(404).json({ error: 'ไม่พบหนังสือที่มีกำหนดคืนในวันนี้' })
+      return
+    }
     res.setHeader('x-total-count', borrowItems.count.toString())
     res.json(borrowItems.borrowItems)
   } catch (error: any) {
@@ -48,6 +56,10 @@ router.get('/unreturned', async (req, res) => {
     const page = parseInt(pageNo as string) || 1
 
     const borrowItems = await borrowService.getUnreturnedBooks(size, page)
+    if (borrowItems.borrowItems.length === 0) {
+      res.status(404).json({ error: 'ไม่พบหนังสือที่ยังไม่ได้คืน' })
+      return
+    }
     res.setHeader('x-total-count', borrowItems.count.toString())
     res.json(borrowItems.borrowItems)
   } catch (error) {
@@ -64,7 +76,12 @@ router.get('/overdue', async (req, res) => {
     const { pageSize, pageNo } = req.query
     const size = parseInt(pageSize as string) || 10
     const page = parseInt(pageNo as string) || 1
+
     const overdueBooks = await borrowService.getOverdueBooks(size, page)
+    if (overdueBooks.borrowItems.length === 0) {
+      res.status(404).json({ error: 'ไม่พบหนังสือที่เกินกำหนดคืน' })
+      return
+    }
     res.setHeader('x-total-count', overdueBooks.count.toString())
     res.json(overdueBooks.borrowItems)
   } catch (error) {

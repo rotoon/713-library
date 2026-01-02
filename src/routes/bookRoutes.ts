@@ -19,6 +19,10 @@ router.get('/', async (req, res) => {
         size,
         page
       )
+      if (result.books.length === 0) {
+        res.status(404).json({ error: 'ไม่พบหนังสือ' })
+        return
+      }
       res.setHeader('x-total-count', result.count.toString())
       return res.json(result.books)
     }
@@ -26,12 +30,20 @@ router.get('/', async (req, res) => {
     // ถ้ามี title ให้ค้นหาเฉพาะชื่อหนังสือ
     if (title) {
       const books = await bookService.searchBooks(title as string, size, page)
+      if (books.books.length === 0) {
+        res.status(404).json({ error: 'ไม่พบหนังสือ' })
+        return
+      }
       res.setHeader('x-total-count', books.count.toString())
       return res.json(books.books)
     }
 
     // ไม่มี parameter = ดึงทั้งหมด
     const books = await bookService.getAllBooks(size, page)
+    if (books.books.length === 0) {
+      res.status(404).json({ error: 'ไม่พบหนังสือ' })
+      return
+    }
     res.setHeader('x-total-count', books.count.toString())
     res.json(books.books)
   } catch (error: any) {

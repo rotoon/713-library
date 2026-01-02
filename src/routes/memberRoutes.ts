@@ -17,10 +17,18 @@ router.get('/', async (req, res) => {
         size,
         page
       )
+      if (members.members.length === 0) {
+        res.status(404).json({ error: 'ไม่พบสมาชิก' })
+        return
+      }
       res.setHeader('x-total-count', members.count.toString())
       return res.json(members.members)
     }
     const members = await memberService.getAllMembers(size, page)
+    if (members.members.length === 0) {
+      res.status(404).json({ error: 'ไม่พบสมาชิก' })
+      return
+    }
     res.setHeader('x-total-count', members.count.toString())
     res.json(members.members)
   } catch (error: any) {
