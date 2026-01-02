@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
     const author = await authorService.getAuthorById(parseInt(id))
     res.json(author)
   } catch (error: any) {
-    res.status(404).json({ error: error.message })
+    res.status(404).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลผู้แต่ง' })
   }
 })
 

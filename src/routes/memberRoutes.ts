@@ -32,9 +32,7 @@ router.get('/', async (req, res) => {
     res.setHeader('x-total-count', members.count.toString())
     res.json(members.members)
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ error: error.message || 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก' })
+    res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก' })
   }
 })
 
@@ -45,7 +43,7 @@ router.get('/code/:code', async (req, res) => {
     const member = await memberService.getMemberByCode(code)
     res.json(member)
   } catch (error: any) {
-    res.status(404).json({ error: error.message })
+    res.status(404).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก' })
   }
 })
 
@@ -56,7 +54,7 @@ router.get('/:id', async (req, res) => {
     const member = await memberService.getMemberById(parseInt(id))
     res.json(member)
   } catch (error: any) {
-    res.status(404).json({ error: error.message })
+    res.status(404).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก' })
   }
 })
 

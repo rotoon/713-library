@@ -43,7 +43,9 @@ router.get('/due', async (req, res) => {
     res.setHeader('x-total-count', borrowItems.count.toString())
     res.json(borrowItems.borrowItems)
   } catch (error: any) {
-    res.status(400).json({ error: error.message })
+    res
+      .status(400)
+      .json({ error: 'เกิดข้อผิดพลาดในการค้นหาหนังสือที่มีกำหนดคืนในวันนี้' })
   }
 })
 

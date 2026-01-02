@@ -47,9 +47,7 @@ router.get('/', async (req, res) => {
     res.setHeader('x-total-count', books.count.toString())
     res.json(books.books)
   } catch (error: any) {
-    res
-      .status(500)
-      .json({ error: error.message || 'เกิดข้อผิดพลาดในการดึงข้อมูลหนังสือ' })
+    res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลหนังสือ' })
   }
 })
 
@@ -60,7 +58,7 @@ router.get('/:id', async (req, res) => {
     const book = await bookService.getBookById(parseInt(id))
     res.json(book)
   } catch (error: any) {
-    res.status(404).json({ error: error.message })
+    res.status(404).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลหนังสือ' })
   }
 })
 
