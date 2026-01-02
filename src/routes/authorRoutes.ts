@@ -4,9 +4,16 @@ import * as authorService from '../services/AuthorService'
 const router = Router()
 
 // GET /authors - ดึงผู้แต่งทั้งหมด
+// Pagination: ?pageSize=10&pageNo=1
 router.get('/', async (req, res) => {
   try {
-    const authors = await authorService.getAllAuthors()
+    const { pageSize, pageNo } = req.query
+    const size = parseInt(pageSize as string) || 10
+    const page = parseInt(pageNo as string) || 1
+
+    const authors = await authorService.getAllAuthors(size, page)
+    const count = await authorService.count()
+    res.setHeader('x-total-count', count.toString())
     res.json(authors)
   } catch (error) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลผู้แต่ง' })

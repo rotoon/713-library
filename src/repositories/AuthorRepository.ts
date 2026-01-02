@@ -1,8 +1,10 @@
 import { prisma } from '../lib/prisma'
 
-export const findAllAuthors = () => {
+export const findAllAuthors = (pageSize: number, pageNo: number) => {
   return prisma.author.findMany({
     include: { books: true },
+    take: pageSize,
+    skip: pageSize * (pageNo - 1),
   })
 }
 
@@ -39,4 +41,8 @@ export const deleteAuthor = (id: number) => {
   return prisma.author.delete({
     where: { id },
   })
+}
+
+export const countAuthors = () => {
+  return prisma.author.count()
 }

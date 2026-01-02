@@ -1,7 +1,10 @@
 import { prisma } from '../lib/prisma'
 
-export const findAllMembers = () => {
-  return prisma.member.findMany()
+export const findAllMembers = (pageSize: number, pageNo: number) => {
+  return prisma.member.findMany({
+    take: pageSize,
+    skip: pageSize * (pageNo - 1),
+  })
 }
 
 export const findMemberById = (id: number) => {
@@ -34,8 +37,14 @@ export const findMemberByCode = (memberCode: string) => {
   })
 }
 
-export const findMembersByName = (name: string) => {
+export const findMembersByName = (
+  name: string,
+  pageSize: number,
+  pageNo: number
+) => {
   return prisma.member.findMany({
+    take: pageSize,
+    skip: pageSize * (pageNo - 1),
     where: {
       OR: [
         { firstName: { contains: name, mode: 'insensitive' } },
@@ -73,4 +82,8 @@ export const deleteMember = (id: number) => {
   return prisma.member.delete({
     where: { id },
   })
+}
+
+export const countMembers = () => {
+  return prisma.member.count()
 }

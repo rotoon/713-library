@@ -4,14 +4,24 @@ import * as memberService from '../services/MemberService'
 const router = Router()
 
 // GET /members - ดึงสมาชิกทั้งหมด หรือค้นหาด้วย ?name=xxx
+// Pagination: ?pageSize=10&pageNo=1
 router.get('/', async (req, res) => {
   try {
-    const { name } = req.query
+    const { name, pageSize, pageNo } = req.query
+    const size = parseInt(pageSize as string) || 10
+    const page = parseInt(pageNo as string) || 1
+
     if (name) {
-      const members = await memberService.searchMembers(name as string)
+      const members = await memberService.searchMembers(
+        name as string,
+        size,
+        page
+      )
       return res.json(members)
     }
-    const members = await memberService.getAllMembers()
+    const members = await memberService.getAllMembers(size, page)
+    const count = await memberService.count()
+    res.setHeader('x-total-count', count.toString())
     res.json(members)
   } catch (error: any) {
     res

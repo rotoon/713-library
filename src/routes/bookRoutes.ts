@@ -4,14 +4,22 @@ import * as bookService from '../services/BookService'
 const router = Router()
 
 // GET /books - ดึงหนังสือทั้งหมด หรือค้นหาด้วย ?title=xxx
+// Pagination: ?pageSize=10&pageNo=1
 router.get('/', async (req, res) => {
   try {
-    const { title } = req.query
+    const { title, pageSize, pageNo } = req.query
+    const size = parseInt(pageSize as string) || 10
+    const page = parseInt(pageNo as string) || 1
+
     if (title) {
-      const books = await bookService.searchBooks(title as string)
+      const books = await bookService.searchBooks(title as string, size, page)
+      const count = await bookService.count()
+      res.setHeader('x-total-count', count.toString())
       return res.json(books)
     }
-    const books = await bookService.getAllBooks()
+    const books = await bookService.getAllBooks(size, page)
+    const count = await bookService.count()
+    res.setHeader('x-total-count', count.toString())
     res.json(books)
   } catch (error: any) {
     res

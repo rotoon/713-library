@@ -1,7 +1,7 @@
 import * as authorRepo from '../repositories/AuthorRepository'
 
-export const getAllAuthors = () => {
-  return authorRepo.findAllAuthors()
+export const getAllAuthors = (pageSize: number = 10, pageNo: number = 1) => {
+  return authorRepo.findAllAuthors(pageSize, pageNo)
 }
 
 export const getAuthorById = async (id: number) => {
@@ -29,4 +29,8 @@ export const updateAuthor = (
 
 export const deleteAuthor = (id: number) => {
   return authorRepo.deleteAuthor(id)
+}
+
+export const count = () => {
+  return authorRepo.countAuthors()
 }

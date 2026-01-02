@@ -1,7 +1,7 @@
 import * as memberRepo from '../repositories/MemberRepository'
 
-export const getAllMembers = () => {
-  return memberRepo.findAllMembers()
+export const getAllMembers = (pageSize: number = 10, pageNo: number = 1) => {
+  return memberRepo.findAllMembers(pageSize, pageNo)
 }
 
 export const getMemberById = async (id: number) => {
@@ -20,11 +20,15 @@ export const getMemberByCode = async (memberCode: string) => {
   return member
 }
 
-export const searchMembers = (name: string) => {
+export const searchMembers = (
+  name: string,
+  pageSize: number = 10,
+  pageNo: number = 1
+) => {
   if (!name || name.trim() === '') {
     throw new Error('กรุณาระบุชื่อที่ต้องการค้นหา')
   }
-  return memberRepo.findMembersByName(name)
+  return memberRepo.findMembersByName(name, pageSize, pageNo)
 }
 
 export const createMember = (data: {
@@ -50,4 +54,8 @@ export const updateMember = (
 
 export const deleteMember = (id: number) => {
   return memberRepo.deleteMember(id)
+}
+
+export const count = () => {
+  return memberRepo.countMembers()
 }

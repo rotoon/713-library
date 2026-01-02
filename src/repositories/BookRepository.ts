@@ -1,8 +1,10 @@
 import { prisma } from '../lib/prisma'
 
-export const findAllBooks = () => {
+export const findAllBooks = (pageSize: number, pageNo: number) => {
   return prisma.book.findMany({
     include: { author: true },
+    take: pageSize,
+    skip: pageSize * (pageNo - 1),
   })
 }
 
@@ -13,7 +15,11 @@ export const findBookById = (id: number) => {
   })
 }
 
-export const findBooksByTitle = (title: string) => {
+export const findBooksByTitle = (
+  title: string,
+  pageSize: number,
+  pageNo: number
+) => {
   return prisma.book.findMany({
     where: {
       title: {
@@ -21,6 +27,8 @@ export const findBooksByTitle = (title: string) => {
         mode: 'insensitive',
       },
     },
+    take: pageSize,
+    skip: pageSize * (pageNo - 1),
     include: { author: true },
   })
 }
@@ -52,4 +60,8 @@ export const deleteBook = (id: number) => {
   return prisma.book.delete({
     where: { id },
   })
+}
+
+export const countBooks = () => {
+  return prisma.book.count()
 }

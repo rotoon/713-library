@@ -1,6 +1,6 @@
 import { prisma } from '../lib/prisma'
 
-export const findAllBorrowRecords = () => {
+export const findAllBorrowRecords = (pageSize: number, pageNo: number) => {
   return prisma.borrowRecord.findMany({
     include: {
       member: true,
@@ -8,6 +8,8 @@ export const findAllBorrowRecords = () => {
         include: { book: true },
       },
     },
+    take: pageSize,
+    skip: pageSize * (pageNo - 1),
   })
 }
 
@@ -23,7 +25,11 @@ export const findBorrowRecordById = (id: number) => {
   })
 }
 
-export const findBorrowItemsByDueDate = (date: Date) => {
+export const findBorrowItemsByDueDate = (
+  date: Date,
+  pageSize: number,
+  pageNo: number
+) => {
   const nextDay = new Date(date)
   nextDay.setDate(nextDay.getDate() + 1)
 
@@ -34,6 +40,8 @@ export const findBorrowItemsByDueDate = (date: Date) => {
         lt: nextDay,
       },
     },
+    take: pageSize,
+    skip: pageSize * (pageNo - 1),
     include: {
       book: { include: { author: true } },
       borrowRecord: { include: { member: true } },
@@ -41,11 +49,13 @@ export const findBorrowItemsByDueDate = (date: Date) => {
   })
 }
 
-export const findUnreturnedBooks = () => {
+export const findUnreturnedBooks = (pageSize: number, pageNo: number) => {
   return prisma.borrowItem.findMany({
     where: {
       returnedAt: null,
     },
+    take: pageSize,
+    skip: pageSize * (pageNo - 1),
     include: {
       book: { include: { author: true } },
       borrowRecord: { include: { member: true } },
@@ -53,7 +63,7 @@ export const findUnreturnedBooks = () => {
   })
 }
 
-export const findOverdueBooks = () => {
+export const findOverdueBooks = (pageSize: number, pageNo: number) => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -62,6 +72,8 @@ export const findOverdueBooks = () => {
       returnedAt: null,
       dueDate: { lt: today },
     },
+    take: pageSize,
+    skip: pageSize * (pageNo - 1),
     include: {
       book: { include: { author: true } },
       borrowRecord: { include: { member: true } },
@@ -101,4 +113,8 @@ export const returnBook = (borrowItemId: number) => {
       borrowRecord: { include: { member: true } },
     },
   })
+}
+
+export const countBorrowItems = () => {
+  return prisma.borrowItem.count()
 }
