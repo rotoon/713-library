@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ผู้แต่ง
+model Author {
+  id          Int      @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  affiliation String // ต้นสังกัด
+  books       Book[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// หนังสือ
+model Book {
+  id          Int          @id @default(autoincrement())
+  title       String // ชื่อหนังสือ
+  isbn        String       @unique
+  category    String // หมวดหนังสือ
+  authorId    Int
+  author      Author       @relation(fields: [authorId], references: [id])
+  borrowItems BorrowItem[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+// สมาชิก
+model Member {
+  id            Int            @id @default(autoincrement())
+  memberCode    String         @unique // รหัสสมาชิก
+  firstName     String
+  lastName      String
+  phone         String // หมายเลขโทรศัพท์
+  borrowRecords BorrowRecord[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+// ประวัติการยืม
+model BorrowRecord {
+  id          Int          @id @default(autoincrement())
+  memberId    Int
+  member      Member       @relation(fields: [memberId], references: [id])
+  borrowDate  DateTime     @default(now()) // วันที่ยืม
+  borrowItems BorrowItem[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+// รายการหนังสือที่ยืม (แต่ละเล่มมีกำหนดคืนและวันคืนจริงแยกกัน)
+model BorrowItem {
+  id             Int          @id @default(autoincrement())
+  borrowRecordId Int
+  borrowRecord   BorrowRecord @relation(fields: [borrowRecordId], references: [id])
+  bookId         Int
+  book           Book         @relation(fields: [bookId], references: [id])
+  dueDate        DateTime // กำหนดเวลาการคืน
+  returnedAt     DateTime? // เวลาในการคืนจริง (null = ยังไม่คืน)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
