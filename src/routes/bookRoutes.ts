@@ -7,11 +7,11 @@ const router = Router()
 // keyword ค้นหาจาก: ชื่อหนังสือ, หมวดหมู่, ชื่อผู้แต่ง, ชื่อผู้ยืม
 // Pagination: ?pageSize=10&pageNo=1
 router.get('/', async (req, res) => {
-  try {
-    const { keyword, title, pageSize, pageNo } = req.query
-    const size = parseInt(pageSize as string) || 10
-    const page = parseInt(pageNo as string) || 1
+  const { keyword, title, pageSize, pageNo } = req.query
+  const size = parseInt(pageSize as string) || 10
+  const page = parseInt(pageNo as string) || 1
 
+  try {
     // ถ้ามี keyword ให้ค้นหาแบบ keyword (หลายฟิลด์)
     if (keyword) {
       const result = await bookService.searchByKeyword(
@@ -48,17 +48,24 @@ router.get('/', async (req, res) => {
     res.json(books.books)
   } catch (error: any) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลหนังสือ' })
+  } finally {
+    console.log(
+      `Request is completed. with pageNo=${page} and pageSize=${size}`
+    )
   }
 })
 
 // GET /books/:id - ดึงหนังสือตาม ID
 router.get('/:id', async (req, res) => {
+  const { id } = req.params
+
   try {
-    const { id } = req.params
     const book = await bookService.getBookById(parseInt(id))
     res.json(book)
   } catch (error: any) {
     res.status(404).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลหนังสือ' })
+  } finally {
+    console.log(`Request GET /books/${id} is completed.`)
   }
 })
 

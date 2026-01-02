@@ -6,11 +6,11 @@ const router = Router()
 // GET /members - ดึงสมาชิกทั้งหมด หรือค้นหาด้วย ?name=xxx
 // Pagination: ?pageSize=10&pageNo=1
 router.get('/', async (req, res) => {
-  try {
-    const { name, pageSize, pageNo } = req.query
-    const size = parseInt(pageSize as string) || 10
-    const page = parseInt(pageNo as string) || 1
+  const { name, pageSize, pageNo } = req.query
+  const size = parseInt(pageSize as string) || 10
+  const page = parseInt(pageNo as string) || 1
 
+  try {
     if (name) {
       const members = await memberService.searchMembers(
         name as string,
@@ -33,28 +33,38 @@ router.get('/', async (req, res) => {
     res.json(members.members)
   } catch (error: any) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก' })
+  } finally {
+    console.log(
+      `Request GET /members is completed. with pageNo=${page} and pageSize=${size}`
+    )
   }
 })
 
 // GET /members/code/:code - ค้นหาสมาชิกตามรหัสสมาชิก
 router.get('/code/:code', async (req, res) => {
+  const { code } = req.params
+
   try {
-    const { code } = req.params
     const member = await memberService.getMemberByCode(code)
     res.json(member)
   } catch (error: any) {
     res.status(404).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก' })
+  } finally {
+    console.log(`Request GET /members/code/${code} is completed.`)
   }
 })
 
 // GET /members/:id - ดึงสมาชิกตาม ID
 router.get('/:id', async (req, res) => {
+  const { id } = req.params
+
   try {
-    const { id } = req.params
     const member = await memberService.getMemberById(parseInt(id))
     res.json(member)
   } catch (error: any) {
     res.status(404).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก' })
+  } finally {
+    console.log(`Request GET /members/${id} is completed.`)
   }
 })
 
