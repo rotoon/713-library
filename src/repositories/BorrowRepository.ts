@@ -5,7 +5,7 @@ export const findAllBorrowRecordsWithPagination = async (
   pageSize: number,
   pageNo: number
 ) => {
-  const borrowRecords = await prisma.borrowRecord.findMany({
+  const borrowItems = await prisma.borrowRecord.findMany({
     include: {
       member: true,
       borrowItems: {
@@ -17,7 +17,7 @@ export const findAllBorrowRecordsWithPagination = async (
   })
 
   const count = await prisma.borrowRecord.count()
-  return { borrowRecords, count } as unknown as BorrowPage
+  return { borrowItems, count } as unknown as BorrowPage
 }
 
 export const findBorrowRecordById = (id: number) => {
