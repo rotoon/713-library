@@ -1,7 +1,11 @@
 import { prisma } from '../lib/prisma'
+import { BorrowPage } from '../models/BorrowPage'
 
-export const findAllBorrowRecords = (pageSize: number, pageNo: number) => {
-  return prisma.borrowRecord.findMany({
+export const findAllBorrowRecordsWithPagination = async (
+  pageSize: number,
+  pageNo: number
+) => {
+  const borrowRecords = await prisma.borrowRecord.findMany({
     include: {
       member: true,
       borrowItems: {
@@ -11,6 +15,9 @@ export const findAllBorrowRecords = (pageSize: number, pageNo: number) => {
     take: pageSize,
     skip: pageSize * (pageNo - 1),
   })
+
+  const count = await prisma.borrowRecord.count()
+  return { borrowRecords, count } as unknown as BorrowPage
 }
 
 export const findBorrowRecordById = (id: number) => {
@@ -25,7 +32,7 @@ export const findBorrowRecordById = (id: number) => {
   })
 }
 
-export const findBorrowItemsByDueDate = (
+export const findBorrowItemsByDueDateWithPagination = async (
   date: Date,
   pageSize: number,
   pageNo: number
@@ -33,7 +40,7 @@ export const findBorrowItemsByDueDate = (
   const nextDay = new Date(date)
   nextDay.setDate(nextDay.getDate() + 1)
 
-  return prisma.borrowItem.findMany({
+  const borrowItems = await prisma.borrowItem.findMany({
     where: {
       dueDate: {
         gte: date,
@@ -47,10 +54,23 @@ export const findBorrowItemsByDueDate = (
       borrowRecord: { include: { member: true } },
     },
   })
+
+  const count = await prisma.borrowItem.count({
+    where: {
+      dueDate: {
+        gte: date,
+        lt: nextDay,
+      },
+    },
+  })
+  return { borrowItems, count } as unknown as BorrowPage
 }
 
-export const findUnreturnedBooks = (pageSize: number, pageNo: number) => {
-  return prisma.borrowItem.findMany({
+export const findUnreturnedBooksWithPagination = async (
+  pageSize: number,
+  pageNo: number
+) => {
+  const borrowItems = await prisma.borrowItem.findMany({
     where: {
       returnedAt: null,
     },
@@ -61,13 +81,23 @@ export const findUnreturnedBooks = (pageSize: number, pageNo: number) => {
       borrowRecord: { include: { member: true } },
     },
   })
+
+  const count = await prisma.borrowItem.count({
+    where: {
+      returnedAt: null,
+    },
+  })
+  return { borrowItems, count } as unknown as BorrowPage
 }
 
-export const findOverdueBooks = (pageSize: number, pageNo: number) => {
+export const findOverdueBooksWithPagination = async (
+  pageSize: number,
+  pageNo: number
+) => {
   const today = new Date()
   today.setHours(0, 0, 0, 0)
 
-  return prisma.borrowItem.findMany({
+  const borrowItems = await prisma.borrowItem.findMany({
     where: {
       returnedAt: null,
       dueDate: { lt: today },
@@ -79,6 +109,14 @@ export const findOverdueBooks = (pageSize: number, pageNo: number) => {
       borrowRecord: { include: { member: true } },
     },
   })
+
+  const count = await prisma.borrowItem.count({
+    where: {
+      returnedAt: null,
+      dueDate: { lt: today },
+    },
+  })
+  return { borrowItems, count } as unknown as BorrowPage
 }
 
 export const createBorrowRecord = (

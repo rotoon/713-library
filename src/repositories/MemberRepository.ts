@@ -1,10 +1,17 @@
 import { prisma } from '../lib/prisma'
+import { MemberPage } from '../models/Member'
 
-export const findAllMembers = (pageSize: number, pageNo: number) => {
-  return prisma.member.findMany({
+export const findAllMembersWithPagination = async (
+  pageSize: number,
+  pageNo: number
+) => {
+  const members = await prisma.member.findMany({
     take: pageSize,
     skip: pageSize * (pageNo - 1),
   })
+
+  const count = await prisma.member.count()
+  return { members, count } as unknown as MemberPage
 }
 
 export const findMemberById = (id: number) => {
@@ -37,12 +44,12 @@ export const findMemberByCode = (memberCode: string) => {
   })
 }
 
-export const findMembersByName = (
+export const findMembersByNameWithPagination = async (
   name: string,
   pageSize: number,
   pageNo: number
 ) => {
-  return prisma.member.findMany({
+  const members = await prisma.member.findMany({
     take: pageSize,
     skip: pageSize * (pageNo - 1),
     where: {
@@ -52,6 +59,16 @@ export const findMembersByName = (
       ],
     },
   })
+
+  const count = await prisma.member.count({
+    where: {
+      OR: [
+        { firstName: { contains: name, mode: 'insensitive' } },
+        { lastName: { contains: name, mode: 'insensitive' } },
+      ],
+    },
+  })
+  return { members, count } as unknown as MemberPage
 }
 
 export const createMember = (data: {

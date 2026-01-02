@@ -1,11 +1,17 @@
 import { prisma } from '../lib/prisma'
+import { BookPage } from '../models/BookPage'
 
-export const findAllBooks = (pageSize: number, pageNo: number) => {
-  return prisma.book.findMany({
+export const findAllBooksWithPagination = async (
+  pageSize: number,
+  pageNo: number
+) => {
+  const books = await prisma.book.findMany({
     include: { author: true },
     take: pageSize,
     skip: pageSize * (pageNo - 1),
   })
+  const count = await prisma.book.count()
+  return { books, count } as unknown as BookPage
 }
 
 export const findBookById = (id: number) => {
@@ -15,12 +21,12 @@ export const findBookById = (id: number) => {
   })
 }
 
-export const findBooksByTitle = (
+export const findBooksByTitleWithPagination = async (
   title: string,
   pageSize: number,
   pageNo: number
 ) => {
-  return prisma.book.findMany({
+  const books = await prisma.book.findMany({
     where: {
       title: {
         contains: title,
@@ -31,6 +37,15 @@ export const findBooksByTitle = (
     skip: pageSize * (pageNo - 1),
     include: { author: true },
   })
+  const count = await prisma.book.count({
+    where: {
+      title: {
+        contains: title,
+        mode: 'insensitive',
+      },
+    },
+  })
+  return { books, count } as unknown as BookPage
 }
 
 export const createBook = (data: {

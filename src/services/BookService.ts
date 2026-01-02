@@ -1,7 +1,7 @@
 import * as bookRepo from '../repositories/BookRepository'
 
 export const getAllBooks = (pageSize: number = 10, pageNo: number = 1) => {
-  return bookRepo.findAllBooks(pageSize, pageNo)
+  return bookRepo.findAllBooksWithPagination(pageSize, pageNo)
 }
 
 export const getBookById = async (id: number) => {
@@ -20,7 +20,7 @@ export const searchBooks = (
   if (!title || title.trim() === '') {
     throw new Error('กรุณาระบุชื่อหนังสือที่ต้องการค้นหา')
   }
-  return bookRepo.findBooksByTitle(title, pageSize, pageNo)
+  return bookRepo.findBooksByTitleWithPagination(title, pageSize, pageNo)
 }
 
 export const createBook = (data: {

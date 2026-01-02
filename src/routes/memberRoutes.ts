@@ -17,12 +17,12 @@ router.get('/', async (req, res) => {
         size,
         page
       )
-      return res.json(members)
+      res.setHeader('x-total-count', members.count.toString())
+      return res.json(members.members)
     }
     const members = await memberService.getAllMembers(size, page)
-    const count = await memberService.count()
-    res.setHeader('x-total-count', count.toString())
-    res.json(members)
+    res.setHeader('x-total-count', members.count.toString())
+    res.json(members.members)
   } catch (error: any) {
     res
       .status(500)

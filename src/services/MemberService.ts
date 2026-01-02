@@ -1,7 +1,7 @@
 import * as memberRepo from '../repositories/MemberRepository'
 
 export const getAllMembers = (pageSize: number = 10, pageNo: number = 1) => {
-  return memberRepo.findAllMembers(pageSize, pageNo)
+  return memberRepo.findAllMembersWithPagination(pageSize, pageNo)
 }
 
 export const getMemberById = async (id: number) => {
@@ -28,7 +28,7 @@ export const searchMembers = (
   if (!name || name.trim() === '') {
     throw new Error('กรุณาระบุชื่อที่ต้องการค้นหา')
   }
-  return memberRepo.findMembersByName(name, pageSize, pageNo)
+  return memberRepo.findMembersByNameWithPagination(name, pageSize, pageNo)
 }
 
 export const createMember = (data: {

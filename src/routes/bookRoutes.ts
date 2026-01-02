@@ -13,13 +13,11 @@ router.get('/', async (req, res) => {
 
     if (title) {
       const books = await bookService.searchBooks(title as string, size, page)
-      const count = await bookService.count()
-      res.setHeader('x-total-count', count.toString())
+      res.setHeader('x-total-count', books.count.toString())
       return res.json(books)
     }
     const books = await bookService.getAllBooks(size, page)
-    const count = await bookService.count()
-    res.setHeader('x-total-count', count.toString())
+    res.setHeader('x-total-count', books.count.toString())
     res.json(books)
   } catch (error: any) {
     res

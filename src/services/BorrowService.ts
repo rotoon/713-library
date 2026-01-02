@@ -4,7 +4,7 @@ export const getAllBorrowRecords = (
   pageSize: number = 10,
   pageNo: number = 1
 ) => {
-  return borrowRepo.findAllBorrowRecords(pageSize, pageNo)
+  return borrowRepo.findAllBorrowRecordsWithPagination(pageSize, pageNo)
 }
 
 export const getBorrowRecordById = async (id: number) => {
@@ -24,18 +24,22 @@ export const getBooksByDueDate = (
     throw new Error('กรุณาระบุวันที่ (format: YYYY-MM-DD)')
   }
   const date = new Date(dateString)
-  return borrowRepo.findBorrowItemsByDueDate(date, pageSize, pageNo)
+  return borrowRepo.findBorrowItemsByDueDateWithPagination(
+    date,
+    pageSize,
+    pageNo
+  )
 }
 
 export const getUnreturnedBooks = (
   pageSize: number = 10,
   pageNo: number = 1
 ) => {
-  return borrowRepo.findUnreturnedBooks(pageSize, pageNo)
+  return borrowRepo.findUnreturnedBooksWithPagination(pageSize, pageNo)
 }
 
 export const getOverdueBooks = (pageSize: number = 10, pageNo: number = 1) => {
-  return borrowRepo.findOverdueBooks(pageSize, pageNo)
+  return borrowRepo.findOverdueBooksWithPagination(pageSize, pageNo)
 }
 
 export const borrowBooks = (

@@ -1,7 +1,7 @@
 import * as authorRepo from '../repositories/AuthorRepository'
 
 export const getAllAuthors = (pageSize: number = 10, pageNo: number = 1) => {
-  return authorRepo.findAllAuthors(pageSize, pageNo)
+  return authorRepo.findAllAuthorsWithPagination(pageSize, pageNo)
 }
 
 export const getAuthorById = async (id: number) => {

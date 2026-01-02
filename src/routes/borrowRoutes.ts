@@ -11,10 +11,9 @@ router.get('/', async (req, res) => {
     const size = parseInt(pageSize as string) || 10
     const page = parseInt(pageNo as string) || 1
 
-    const count = await borrowService.count()
     const borrowRecords = await borrowService.getAllBorrowRecords(size, page)
-    res.setHeader('x-total-count', count.toString())
-    res.json(borrowRecords)
+    res.setHeader('x-total-count', borrowRecords.count.toString())
+    res.json(borrowRecords.borrowItems)
   } catch (error) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงประวัติการยืม' })
   }
@@ -27,15 +26,14 @@ router.get('/due', async (req, res) => {
     const { date, pageSize, pageNo } = req.query
     const size = parseInt(pageSize as string) || 10
     const page = parseInt(pageNo as string) || 1
-    const count = await borrowService.count()
 
     const borrowItems = await borrowService.getBooksByDueDate(
       date as string,
       size,
       page
     )
-    res.setHeader('x-total-count', count.toString())
-    res.json(borrowItems)
+    res.setHeader('x-total-count', borrowItems.count.toString())
+    res.json(borrowItems.borrowItems)
   } catch (error: any) {
     res.status(400).json({ error: error.message })
   }
@@ -49,10 +47,9 @@ router.get('/unreturned', async (req, res) => {
     const size = parseInt(pageSize as string) || 10
     const page = parseInt(pageNo as string) || 1
 
-    const count = await borrowService.count()
     const borrowItems = await borrowService.getUnreturnedBooks(size, page)
-    res.setHeader('x-total-count', count.toString())
-    res.json(borrowItems)
+    res.setHeader('x-total-count', borrowItems.count.toString())
+    res.json(borrowItems.borrowItems)
   } catch (error) {
     res
       .status(500)
@@ -67,10 +64,9 @@ router.get('/overdue', async (req, res) => {
     const { pageSize, pageNo } = req.query
     const size = parseInt(pageSize as string) || 10
     const page = parseInt(pageNo as string) || 1
-    const count = await borrowService.count()
-    const borrowItems = await borrowService.getOverdueBooks(size, page)
-    res.setHeader('x-total-count', count.toString())
-    res.json(borrowItems)
+    const overdueBooks = await borrowService.getOverdueBooks(size, page)
+    res.setHeader('x-total-count', overdueBooks.count.toString())
+    res.json(overdueBooks.borrowItems)
   } catch (error) {
     res
       .status(500)
@@ -83,8 +79,6 @@ router.post('/:borrowItemId/return', async (req, res) => {
   try {
     const { borrowItemId } = req.params
     const result = await borrowService.returnBook(parseInt(borrowItemId))
-    const count = await borrowService.count()
-    res.setHeader('x-total-count', count.toString())
     res.json(result)
   } catch (error: any) {
     res.status(400).json({ error: error.message })

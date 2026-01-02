@@ -1,11 +1,18 @@
 import { prisma } from '../lib/prisma'
 
-export const findAllAuthors = (pageSize: number, pageNo: number) => {
-  return prisma.author.findMany({
+import { AutherPage } from '../models/AutherPage'
+
+export const findAllAuthorsWithPagination = (
+  pageSize: number,
+  pageNo: number
+) => {
+  const authors = prisma.author.findMany({
     include: { books: true },
     take: pageSize,
     skip: pageSize * (pageNo - 1),
   })
+  const count = prisma.author.count()
+  return { authors, count } as unknown as AutherPage
 }
 
 export const findAuthorById = (id: number) => {
