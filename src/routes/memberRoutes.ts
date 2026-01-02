@@ -22,7 +22,7 @@ router.get('/', async (req, res) => {
         return
       }
       res.setHeader('x-total-count', result.count.toString())
-      return res.json(result.members)
+      return res.json(result)
     }
     const result = await memberService.getAllMembers(size, page)
     if (result.members.length === 0) {
@@ -30,7 +30,7 @@ router.get('/', async (req, res) => {
       return
     }
     res.setHeader('x-total-count', result.count.toString())
-    res.json(result.members)
+    res.json(result)
   } catch (error: any) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก' })
   } finally {

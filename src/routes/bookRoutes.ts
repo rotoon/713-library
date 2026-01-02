@@ -24,7 +24,7 @@ router.get('/', async (req, res) => {
         return
       }
       res.setHeader('x-total-count', result.count.toString())
-      return res.json(result.books)
+      return res.json(result)
     }
 
     // ถ้ามี title ให้ค้นหาเฉพาะชื่อหนังสือ
@@ -35,7 +35,7 @@ router.get('/', async (req, res) => {
         return
       }
       res.setHeader('x-total-count', result.count.toString())
-      return res.json(result.books)
+      return res.json(result)
     }
 
     // ไม่มี parameter = ดึงทั้งหมด
@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
       return
     }
     res.setHeader('x-total-count', result.count.toString())
-    res.json(result.books)
+    res.json(result)
   } catch (error: any) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลหนังสือ' })
   } finally {

@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
       return
     }
     res.setHeader('x-total-count', result.count.toString())
-    res.json(result.borrowItems)
+    res.json(result)
   } catch (error) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงประวัติการยืม' })
   } finally {
@@ -45,7 +45,7 @@ router.get('/due', async (req, res) => {
       return
     }
     res.setHeader('x-total-count', result.count.toString())
-    res.json(result.borrowItems)
+    res.json(result)
   } catch (error: any) {
     res
       .status(400)
@@ -69,7 +69,7 @@ router.get('/unreturned', async (req, res) => {
       return
     }
     res.setHeader('x-total-count', result.count.toString())
-    res.json(result.borrowItems)
+    res.json(result)
   } catch (error) {
     res
       .status(500)
@@ -95,7 +95,7 @@ router.get('/overdue', async (req, res) => {
       return
     }
     res.setHeader('x-total-count', result.count.toString())
-    res.json(result.borrowItems)
+    res.json(result)
   } catch (error) {
     res
       .status(500)

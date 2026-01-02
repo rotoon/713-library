@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
       return
     }
     res.setHeader('x-total-count', result.count.toString())
-    res.json(result.authors)
+    res.json(result)
   } catch (error) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลผู้แต่ง' })
   } finally {
