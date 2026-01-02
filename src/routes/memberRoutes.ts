@@ -12,25 +12,25 @@ router.get('/', async (req, res) => {
 
   try {
     if (name) {
-      const members = await memberService.searchMembers(
+      const result = await memberService.searchMembers(
         name as string,
         size,
         page
       )
-      if (members.members.length === 0) {
+      if (result.members.length === 0) {
         res.status(404).json({ error: 'ไม่พบสมาชิก' })
         return
       }
-      res.setHeader('x-total-count', members.count.toString())
-      return res.json(members.members)
+      res.setHeader('x-total-count', result.count.toString())
+      return res.json(result.members)
     }
-    const members = await memberService.getAllMembers(size, page)
-    if (members.members.length === 0) {
+    const result = await memberService.getAllMembers(size, page)
+    if (result.members.length === 0) {
       res.status(404).json({ error: 'ไม่พบสมาชิก' })
       return
     }
-    res.setHeader('x-total-count', members.count.toString())
-    res.json(members.members)
+    res.setHeader('x-total-count', result.count.toString())
+    res.json(result.members)
   } catch (error: any) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก' })
   } finally {
@@ -45,8 +45,8 @@ router.get('/code/:code', async (req, res) => {
   const { code } = req.params
 
   try {
-    const member = await memberService.getMemberByCode(code)
-    res.json(member)
+    const result = await memberService.getMemberByCode(code)
+    res.json(result)
   } catch (error: any) {
     res.status(404).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก' })
   } finally {
@@ -59,8 +59,8 @@ router.get('/:id', async (req, res) => {
   const { id } = req.params
 
   try {
-    const member = await memberService.getMemberById(parseInt(id))
-    res.json(member)
+    const result = await memberService.getMemberById(parseInt(id))
+    res.json(result)
   } catch (error: any) {
     res.status(404).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลสมาชิก' })
   } finally {

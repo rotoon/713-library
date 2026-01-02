@@ -11,13 +11,13 @@ router.get('/', async (req, res) => {
   const page = parseInt(pageNo as string) || 1
 
   try {
-    const authors = await authorService.getAllAuthors(size, page)
-    if (authors.authors.length === 0) {
+    const result = await authorService.getAllAuthors(size, page)
+    if (result.authors.length === 0) {
       res.status(404).json({ error: 'ไม่พบผู้แต่ง' })
       return
     }
-    res.setHeader('x-total-count', authors.count.toString())
-    res.json(authors.authors)
+    res.setHeader('x-total-count', result.count.toString())
+    res.json(result.authors)
   } catch (error) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลผู้แต่ง' })
   } finally {
@@ -32,8 +32,8 @@ router.get('/:id', async (req, res) => {
   const { id } = req.params
 
   try {
-    const author = await authorService.getAuthorById(parseInt(id))
-    res.json(author)
+    const result = await authorService.getAuthorById(parseInt(id))
+    res.json(result)
   } catch (error: any) {
     res.status(404).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลผู้แต่ง' })
   } finally {

@@ -29,23 +29,23 @@ router.get('/', async (req, res) => {
 
     // ถ้ามี title ให้ค้นหาเฉพาะชื่อหนังสือ
     if (title) {
-      const books = await bookService.searchBooks(title as string, size, page)
-      if (books.books.length === 0) {
+      const result = await bookService.searchBooks(title as string, size, page)
+      if (result.books.length === 0) {
         res.status(404).json({ error: 'ไม่พบหนังสือ' })
         return
       }
-      res.setHeader('x-total-count', books.count.toString())
-      return res.json(books.books)
+      res.setHeader('x-total-count', result.count.toString())
+      return res.json(result.books)
     }
 
     // ไม่มี parameter = ดึงทั้งหมด
-    const books = await bookService.getAllBooks(size, page)
-    if (books.books.length === 0) {
+    const result = await bookService.getAllBooks(size, page)
+    if (result.books.length === 0) {
       res.status(404).json({ error: 'ไม่พบหนังสือ' })
       return
     }
-    res.setHeader('x-total-count', books.count.toString())
-    res.json(books.books)
+    res.setHeader('x-total-count', result.count.toString())
+    res.json(result.books)
   } catch (error: any) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลหนังสือ' })
   } finally {
@@ -60,8 +60,8 @@ router.get('/:id', async (req, res) => {
   const { id } = req.params
 
   try {
-    const book = await bookService.getBookById(parseInt(id))
-    res.json(book)
+    const result = await bookService.getBookById(parseInt(id))
+    res.json(result)
   } catch (error: any) {
     res.status(404).json({ error: 'เกิดข้อผิดพลาดในการดึงข้อมูลหนังสือ' })
   } finally {
