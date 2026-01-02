@@ -11,9 +11,9 @@ router.get('/', async (req, res) => {
     const size = parseInt(pageSize as string) || 10
     const page = parseInt(pageNo as string) || 1
 
-    const borrowRecords = await borrowService.getAllBorrowRecords(size, page)
-    res.setHeader('x-total-count', borrowRecords.count.toString())
-    res.json(borrowRecords.borrowItems)
+    const result = await borrowService.getAllBorrowRecords(size, page)
+    res.setHeader('x-total-count', result.count.toString())
+    res.json(result.borrowItems)
   } catch (error) {
     res.status(500).json({ error: 'เกิดข้อผิดพลาดในการดึงประวัติการยืม' })
   }

@@ -80,3 +80,100 @@ export const deleteBook = (id: number) => {
 export const countBooks = () => {
   return prisma.book.count()
 }
+
+// ค้นหาหนังสือด้วย keyword (ชื่อหนังสือ, หมวดหมู่, ผู้แต่ง, ผู้ยืม)
+export const searchByKeywordWithPagination = async (
+  keyword: string,
+  pageSize: number,
+  pageNo: number
+) => {
+  const whereCondition = {
+    OR: [
+      // ค้นหาจากชื่อหนังสือ
+      { title: { contains: keyword, mode: 'insensitive' as const } },
+      // ค้นหาจากหมวดหมู่
+      { category: { contains: keyword, mode: 'insensitive' as const } },
+      // ค้นหาจากชื่อผู้แต่ง
+      {
+        author: {
+          OR: [
+            { firstName: { contains: keyword, mode: 'insensitive' as const } },
+            { lastName: { contains: keyword, mode: 'insensitive' as const } },
+          ],
+        },
+      },
+      // ค้นหาจากชื่อผู้ยืม
+      {
+        borrowItems: {
+          some: {
+            borrowRecord: {
+              member: {
+                OR: [
+                  {
+                    firstName: {
+                      contains: keyword,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                  {
+                    lastName: {
+                      contains: keyword,
+                      mode: 'insensitive' as const,
+                    },
+                  },
+                ],
+              },
+            },
+          },
+        },
+      },
+    ],
+  }
+
+  const books = await prisma.book.findMany({
+    where: whereCondition,
+    take: pageSize,
+    skip: pageSize * (pageNo - 1),
+    include: {
+      author: true,
+      borrowItems: {
+        include: {
+          borrowRecord: {
+            include: {
+              member: true,
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 1, // แสดงผู้ยืมล่าสุด
+      },
+    },
+  })
+
+  const count = await prisma.book.count({ where: whereCondition })
+
+  // จัดรูปแบบข้อมูลให้เหมาะสม
+  const formattedBooks = books.map((book) => ({
+    id: book.id,
+    title: book.title,
+    isbn: book.isbn,
+    category: book.category,
+    author: {
+      id: book.author.id,
+      firstName: book.author.firstName,
+      lastName: book.author.lastName,
+      fullName: `${book.author.firstName} ${book.author.lastName}`,
+    },
+    lastBorrower: book.borrowItems[0]
+      ? {
+          id: book.borrowItems[0].borrowRecord.member.id,
+          firstName: book.borrowItems[0].borrowRecord.member.firstName,
+          lastName: book.borrowItems[0].borrowRecord.member.lastName,
+          fullName: `${book.borrowItems[0].borrowRecord.member.firstName} ${book.borrowItems[0].borrowRecord.member.lastName}`,
+          borrowDate: book.borrowItems[0].borrowRecord.borrowDate,
+        }
+      : null,
+  }))
+
+  return { books: formattedBooks, count }
+}

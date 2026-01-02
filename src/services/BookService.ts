@@ -46,3 +46,15 @@ export const deleteBook = (id: number) => {
 export const count = () => {
   return bookRepo.countBooks()
 }
+
+// ค้นหาหนังสือด้วย keyword (ชื่อหนังสือ, หมวดหมู่, ผู้แต่ง, ผู้ยืม)
+export const searchByKeyword = (
+  keyword: string,
+  pageSize: number = 10,
+  pageNo: number = 1
+) => {
+  if (!keyword || keyword.trim() === '') {
+    throw new Error('กรุณาระบุคำค้นหา')
+  }
+  return bookRepo.searchByKeywordWithPagination(keyword, pageSize, pageNo)
+}
